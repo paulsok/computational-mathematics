@@ -1,0 +1,115 @@
+unit Unit1;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, Grids, ExtCtrls;
+const MaxRazmer = 6;
+type
+  Nap = array[1..MaxRazmer] of Double;     // определяем массив a[i,j]=6х6
+  Mat = array[1..MaxRazmer] of Nap;
+
+  TForm1 = class(TForm)
+    Edit1: TEdit;
+    Label1: TLabel;
+    Button1: TButton;
+    Label2: TLabel;
+    StringGrid1: TStringGrid;
+    StringGrid2: TStringGrid;
+    Label3: TLabel;
+    Label4: TLabel;
+    Panel1: TPanel;
+    Button2: TButton;
+    ListBox1: TListBox;
+    procedure Button2Click(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure Edit1Change(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  n:integer;
+  Form1: TForm1;
+
+implementation
+
+{$R *.dfm}
+
+procedure Smenastrok(var a: mat; const i,j:integer);  //процедура смены строк местами
+  var s:integer;
+      t:real;
+  Begin
+   For s:=1 to n do            //для массива начиная с 1-го элемента 1 строки до конца строки
+    begin                      //меняем местами строки
+     t:=a[i,s];
+     a[i,s]:=a[j,s];
+     a[j,s]:=t;
+    end;
+  end;
+
+procedure TForm1.Button1Click(Sender: TObject);
+var   a: Mat;
+      b,x: Nap;
+      l: Double;
+      i,j,k,n,br:integer;
+
+begin
+ListBox1.Items.Clear;
+n := StrToIntDef(Text, StringGrid1.ColCount);
+br:=0;
+  for j := 0 to n - 1 do                   // массив начиная с первого номера для строки и
+    for i := 0 to n - 1 do                 //коллонны
+    a[i + 1, j + 1] := StrToFloatDef(StringGrid1.Cells[j, i], 0);
+      for i := 0 to n - 1 do
+      b[i + 1] := StrToFloatDef(StringGrid2.Cells[0, i], 0);
+        for i:=1 to n-1 do
+          for j:=i+1 to n do
+            begin         //выполняем прямой ход метода Гауса
+              a[j,i]:=-a[j,i]/a[i,i];   //делим строку(взятую с противоположным знаком)
+                for k:=i+1 to n do      //на выбранный вед. эл. a[i,i] далее
+                a[j,k]:=a[j,k]+a[j,i]*a[i,k];//к последующей строке прибавляем предыдущую
+                b[j]:=b[j]+a[j,i]*b[i]       // для каждого элемента в строке j
+            end;
+if a[i,i]=0 then    //проверка если ведущий элемент равен нулю
+begin
+for j:=i+1 to n do
+If a[j,i]<>0 then   // если нашлась строка с ненулевым новым ведущим элементом
+    begin
+      SmenaStrok(a,i,j);  //меняем эту строку-перемещаем наверх
+       br:=1;             //установка флага
+        break;
+    end;
+   If br=1 then         // в зависимости от флага
+      i:=i+1;           //переход к следующему диагональному ведущему элементу
+end;
+x[n]:=b[n]/a[n,n];
+  for i:=n-1 downto 1 do
+begin
+  l:=b[i];
+  for j:=i+1 to n do l:=l-x[j]*a[i,j];
+  x[i]:=l/a[i,i]
+end;
+for i:=1 to n do ListBox1.Items.Append('x(' + IntToStr(i) + ')=' + FloatToStr(x[i]));
+end;
+
+procedure TForm1.Button2Click(Sender: TObject);
+begin
+close;
+end;
+
+procedure TForm1.Edit1Change(Sender: TObject);
+begin
+  with StringGrid1, Edit1 do
+  begin
+    ColCount := StrToIntDef(Text, 3);
+    RowCount := StrToIntDef(Text, 3);
+  end;
+  with StringGrid2, Edit1 do
+    RowCount := StrToIntDef(Text, 3)
+end;
+
+end.

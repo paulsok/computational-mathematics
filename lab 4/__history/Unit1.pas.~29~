@@ -1,0 +1,118 @@
+﻿unit Unit1;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, Grids, ExtCtrls, ExtDlgs;
+
+type
+  TForm1 = class(TForm)
+    Button2: TButton;
+    Panel1: TPanel;
+    Label3: TLabel;
+    Button1: TButton;
+    Edit1: TEdit;
+    Edit2: TEdit;
+    Label2: TLabel;
+    Label4: TLabel;
+    Edit3: TEdit;
+    Edit4: TEdit;
+    Edit5: TEdit;
+    Edit6: TEdit;
+    GroupBox1: TGroupBox;
+    Image1: TImage;
+    OpenPictureDialog1: TOpenPictureDialog;
+    Image2: TImage;
+    OpenPictureDialog2: TOpenPictureDialog;
+    Edit7: TEdit;
+    Edit8: TEdit;
+    GroupBox2: TGroupBox;
+    Label5: TLabel;
+    Label6: TLabel;
+    ListBox1: TListBox;
+    procedure Button1Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var i,j,n:integer;
+  Form1: TForm1;
+
+implementation
+
+{$R *.dfm}
+var e:real;
+
+function sxod(x0,y0:real):real;
+ var
+max:real;
+ x,y,f1,f2,f3,f4:real;
+begin
+     x0:=x;
+     y0:=y;
+     f1:=0;
+     f2:=(10*ln(y)-y+4)/2;
+     f3:=(5*x+20*ln(x)+16)/6;
+     f4:=0;
+     max:=abs(f1);
+     If abs(f2)>max then max:=abs(f2);
+     If abs(f3)>max then max:=abs(f3);
+     If abs(f4)>max then max:=abs(f4);
+     Result:=max;
+end;
+
+procedure method(x0,y0:real);
+var
+x,y,x1,y1,t,max,q:real;
+begin
+      e:=0.01;
+      q:=sxod(x0,y0);
+      x:=x0;
+      y:=y0;
+      x1:=(10/(y*ln(10))-1)/2;
+      y1:=(20/(x*ln(10))+5)/6;
+      x:=x1;
+      y:=y1;
+      t:=q;
+      max:=abs(x1-x0);
+      If abs(y1-y0)>max then max:=abs(y1-y0);
+      while max*t/(1-q)>e do
+                    begin
+                         x1:=(10/(y*ln(10))-1)/2;
+                         y1:=(20/(x*ln(10))+5)/6;
+                         x:=x1; y:=y1;
+                         t:=t*q;
+                    end;
+end;
+
+procedure TForm1.Button1Click(Sender: TObject);
+begin
+close;
+end;
+
+procedure TForm1.Button2Click(Sender: TObject);
+var x,y:real;
+begin
+method(0.40,0.72);
+ListBox1.Items.Add(FloatToStr(x));
+ListBox1.Items.Add(FloatToStr(y));
+end;
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+if OpenPictureDialog1.Execute then
+Image1.Picture.LoadFromFile(OpenPictureDialog1.FileName);
+if OpenPictureDialog2.Execute then
+Image2.Picture.LoadFromFile(OpenPictureDialog2.FileName);
+end;
+
+end.
+
+
+
+

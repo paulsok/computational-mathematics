@@ -1,0 +1,179 @@
+unit Unit1;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, Grids, StdCtrls;
+
+type
+  TForm1 = class(TForm)
+    StringGrid1: TStringGrid;
+    Label1: TLabel;
+    Edit1: TEdit;
+    Label2: TLabel;
+    Edit2: TEdit;
+    Label3: TLabel;
+    Edit3: TEdit;
+    Edit4: TEdit;
+    Label4: TLabel;
+    Edit5: TEdit;
+    Label5: TLabel;
+    Edit6: TEdit;
+    Label6: TLabel;
+    Edit7: TEdit;
+    Label7: TLabel;
+    Edit8: TEdit;
+    Button1: TButton;
+    StringGrid2: TStringGrid;
+    StaticText1: TStaticText;
+    procedure FormCreate(Sender: TObject);
+    procedure StringGrid1KeyPress(Sender: TObject; var Key: Char);
+    procedure Button1Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+const
+ N=5;
+type
+ tqadro = array[0..N,0..N] of real;
+ tline = array[0..N] of real;
+var
+  Form1: TForm1;
+
+implementation
+
+{$R *.dfm}
+Procedure Progonka(G:tqadro;F:tline; var X:tline);
+ Var
+  C:tline;
+  A:array[1..N] of real;
+  B:array[0..N-1] of real;
+  al,bet:array[1..N] of real;
+  i:integer;
+ Begin
+  For i:=0 to N do C[i]:=G[i,i];
+  For i:=0 to N-1 do B[i]:=G[i,i+1];
+  For i:=1 to N do A[i]:=G[i,i-1];
+  {прямой ход (по вспомогательным коэффициентам)}
+  al[1]:=-B[0]/c[0];
+  bet[1]:=F[0]/c[0];
+  For i:=1 to N-1 do
+   begin
+    al[i+1]:=-b[i]/(a[i]*al[i]+c[i]);
+    bet[i+1]:=(f[i]-a[i]*bet[i])/(a[i]*al[i]+c[i]);
+   end;
+  {обратный ход (по искомым иксам)}
+  x[n]:=(f[n]-a[n]*bet[n])/(c[n]+a[n]*al[n]);
+  For i:=n-1 downto 0 do
+   x[i]:=al[i+1]*x[i+1]+bet[i+1];
+ end;
+procedure TForm1.FormCreate(Sender: TObject);
+var
+ i:integer;
+begin
+stringgrid1.cells[0,0]:='i';
+stringgrid1.Cells[0,1]:='X';
+stringgrid1.Cells[0,2]:='Y';
+stringgrid1.Cells[1,1]:='0,2';
+stringgrid1.Cells[2,1]:='0,24';
+stringgrid1.Cells[3,1]:='0,26';
+stringgrid1.Cells[4,1]:='0,29';
+stringgrid1.Cells[5,1]:='0,32';
+stringgrid1.Cells[6,1]:='0,38';
+stringgrid1.Cells[1,2]:='1,2214';
+stringgrid1.Cells[2,2]:='1,2712';
+stringgrid1.Cells[3,2]:='1,2969';
+stringgrid1.Cells[4,2]:='1,3364';
+stringgrid1.Cells[5,2]:='1,3771';
+stringgrid1.Cells[6,2]:='1,4623';
+For i:=0 to N do
+ stringgrid1.cells[i+1,0]:=inttostr(i);
+For i:=1 to N do
+ stringgrid2.cells[0,i]:=inttostr(i);
+stringgrid2.Cells[1,0]:='A';
+stringgrid2.Cells[2,0]:='B';
+stringgrid2.Cells[3,0]:='C';
+stringgrid2.Cells[4,0]:='D';
+end;
+
+
+procedure TForm1.StringGrid1KeyPress(Sender: TObject; var Key: Char);
+begin
+ case Key of
+  #8,'0'..'9',',' : ; // цифры и клавиша <Backspace>
+  #13: if (StringGrid1.Col<StringGrid1.ColCount - 1)
+       then StringGrid1.Col := StringGrid1.Col + 1;
+       else key := Chr(0);
+ end;
+end;
+
+
+procedure TForm1.Button1Click(Sender: TObject);
+var
+a:array[1..4,0..N] of real;
+h:array[1..N] of real;
+k0,k1,k,g4,g5,g,x,x0:real;
+i,j:integer;
+B:tqadro;
+F:tline;
+C:tline;
+begin
+ {коэффициенты Аi и разности Hi}
+ For i:=0 to N do A[1,i]:=strtofloat(stringgrid1.Cells[i+1,2]);
+ For i:=1 to N do H[i]:=strtofloat(stringgrid1.Cells[i+1,1])-strtofloat(stringgrid1.Cells[i,1]);
+ { параметры 2-х граничных условий}
+ k0:=strtofloat(edit1.text);
+ k1:=strtofloat(edit2.text);
+ k:=strtofloat(edit3.text);
+ g4:=strtofloat(edit4.text);
+ g5:=strtofloat(edit5.text);
+ g:=strtofloat(edit6.text);
+ {3-x диагональная матрица для нахождения коэффициентов Ci}
+  B[0,0]:=k0;
+  B[0,1]:=k1;
+  B[N,N-1]:=g4;
+  B[N,N]:=g5;
+  For i:=1 to N-1 do
+   begin
+    B[i,i]:=2*(H[i]+H[i+1]);
+    B[i,i+1]:=H[i+1];
+    B[i,i-1]:=H[i];
+   end;
+  F[0]:=k;
+  For i:=1 to N-1 do F[i]:=6*((A[1,i+1]-A[1,i])/H[i+1]-(A[1,i]-A[1,i-1])/H[i]);
+  F[N]:=g;
+  { метод прогонки для нахождения Ci}
+  PROGONKA(B,F,C);
+  For i:=0 to N do A[3,i]:=c[i];
+  {поиск остальных коэффициентов сплайна (Di,Bi)}
+  For i:=1 to N do
+   begin
+    A[4,i]:=(c[i]-c[i-1])/(6*h[i]);
+    A[2,i]:=-h[i]*c[i]/2-sqr(h[i])*A[4,i]+(a[1,i]-a[1,i-1])/h[i];
+   end;
+  {отображение сплайна в виде таблицы}
+  For i:=1 to 4 do
+   for j:=1 to N do
+    stringgrid2.Cells[i,j]:=floattostr(a[i,j]);
+  {значение сплайна в точке}
+   x:=strtofloat(edit7.Text);
+   x0:=strtofloat(stringgrid1.Cells[1,1]);
+   If x0=x then edit8.Text:=floattostr(A[1,0])
+           else
+              begin
+               For i:=1 to N do
+                begin
+                 x0:=x0+h[i];
+                 If x<=x0 then
+                 begin
+                  j:=i;
+                  break;
+                 end;
+                end;
+               edit8.Text:=floattostr(a[1,j]+a[2,j]*(x-x0)+a[3,j]*sqr(x-x0)+a[4,j]*sqr(x-x0)*(x-x0))
+              end;
+ end;
+end.

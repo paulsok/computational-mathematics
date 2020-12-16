@@ -1,0 +1,102 @@
+unit Unit1;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls;
+
+type
+  TForm1 = class(TForm)
+    Edit1: TEdit;
+    Edit2: TEdit;
+    Edit3: TEdit;
+    Edit4: TEdit;
+    Edit5: TEdit;
+    Edit6: TEdit;
+    Edit7: TEdit;
+    GroupBox1: TGroupBox;
+    Edit8: TEdit;
+    Edit9: TEdit;
+    Edit10: TEdit;
+    Edit11: TEdit;
+    Edit12: TEdit;
+    Edit13: TEdit;
+    Edit14: TEdit;
+    Label1: TLabel;
+    Label2: TLabel;
+    Button1: TButton;
+    Button2: TButton;
+    Label3: TLabel;
+    Edit15: TEdit;
+    Label4: TLabel;
+    Label5: TLabel;
+    procedure FormCreate(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form1: TForm1;
+  Xk: array[0..100] of double;
+  Yk: array[0..100] of double;
+  x,result:double;
+
+implementation
+
+{$R *.dfm}
+
+function LagrangeInPoint(xk: array of double; yk: array of double;x: double): double;
+  var
+    Mult: double;
+    Sum: double;
+    i,j : integer;
+  begin
+  Sum:=0;
+     for i:=0 to 6 do begin
+         Mult:=1;
+           for j:=0 to 6 do begin
+               if (i<>j) then begin Mult:=Mult*((x-xk[j])/(xk[i]-xk[j]));end;
+           end;
+           Sum:=Sum+yk[i]*Mult;
+     end;
+     LagrangeInPoint:=Sum;
+end;
+
+procedure TForm1.Button1Click(Sender: TObject);
+begin
+result:=LagrangeInPoint(xk,yk,x);
+Label5.Caption:=FloatToStr(result);
+end;
+
+procedure TForm1.Button2Click(Sender: TObject);
+begin
+close;
+end;
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+     Xk[0]:=StrTofloat(edit1.text);
+     Xk[1]:=StrTofloat(edit2.text);
+     Xk[2]:=StrTofloat(edit3.text);
+     Xk[3]:=StrTofloat(edit4.text);
+     Xk[4]:=StrTofloat(edit5.text);
+     Xk[5]:=StrTofloat(edit6.text);
+     Xk[6]:=StrTofloat(edit7.text);
+
+     Yk[0]:=StrTofloat(edit8.text);
+     Yk[1]:=StrTofloat(edit9.text);
+     Yk[2]:=StrTofloat(edit10.text);
+     Yk[3]:=StrTofloat(edit11.text);
+     Yk[4]:=StrTofloat(edit12.text);
+     Yk[5]:=StrTofloat(edit13.text);
+     Yk[6]:=StrTofloat(edit14.text);
+
+     x:=StrToFloat(Edit15.Text);
+end;
+
+end.
